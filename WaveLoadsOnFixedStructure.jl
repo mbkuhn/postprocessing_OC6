@@ -38,7 +38,8 @@ file_ofast_exp = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/OC6_LC
 file_ofast_cfd = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/OC6_LC33_LC53_CFD_scripts_data/LC33_FixedStructure/NREL_LC33_FAST_CFDWave.txt"
 file_exawind_pfx = "/Users/mkuhn/testruns_data/OC5_semisubmersible/HOS-NWT/pointwise_mesh/floater_forces"
 file_exawind_sfx = ".dat"
-file_exawind_labels = ["1","2","3","4","5"]
+file_exawind_labels = ["0","1","2","3","4","5"]
+#file_exawind_labels = ["_2025july"]
 
 
 file_amrwind = ""
@@ -154,9 +155,9 @@ _ , Nalu_EvenlySpaced_My = get_evenly_spaced_time_series(NaluWAVE_data[:,1],Nalu
 NaluWave_time = time_evenly_spaced.*sqrt(rescaling)
 
 # In case one needs to discard any transient time data
-#t_final = NaluWave_time[1]./sqrt(rescaling) + 0.027*(NaluWave_time[end]./sqrt(rescaling)) + 545.0 # seconds (model scale)
 #t_skip = NaluWave_time[1]./sqrt(rescaling) + 0.027*(NaluWave_time[end]./sqrt(rescaling)) # seconds (model scale) # if skipping some times is needed 
-t_skip = 20.
+#t_final = t_skip + 545.0 # seconds (model scale)
+t_skip = 39.1
 t_final = t_skip + 545.
 println("t_skip = ",t_skip)
 indices = findall(NaluWave_time->(NaluWave_time>=(t_skip*sqrt(rescaling)) && NaluWave_time<=(t_final*sqrt(rescaling))),NaluWave_time)
