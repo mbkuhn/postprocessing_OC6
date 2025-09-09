@@ -32,25 +32,37 @@ else
     smoothing_parameter = 30
 end
 
+file_exp = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/OC6_LC33_LC53_CFD_scripts_data/LC33_FixedStructure/ZXP0_LC33_full.txt"
+file_cfd_ref = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/OC6_LC33_LC53_CFD_scripts_data/LC33_FixedStructure/NREL_LC33_CFD.txt"
+file_ofast_exp = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/OC6_LC33_LC53_CFD_scripts_data/LC33_FixedStructure/NREL_LC33_FAST_EXPWave.txt"
+file_ofast_cfd = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/OC6_LC33_LC53_CFD_scripts_data/LC33_FixedStructure/NREL_LC33_FAST_CFDWave.txt"
+file_exawind_pfx = "/Users/mkuhn/testruns_data/OC5_semisubmersible/HOS-NWT/pointwise_mesh/floater_forces"
+file_exawind_sfx = ".dat"
+file_exawind_labels = ["1","2","3","4","5"]
 
-rows_to_skip = 49
-# Data from probes for JONSWAP spectrum from HOS-NWT simulation (only needed if the comparison with wave elevation is needed)
-HOS_NWT_Case4_data = readdlm("PATH/TO/HOS/WAVE_ELEVATION_DATA/filename")
-HOS_NWT_Case4_data = HOS_NWT_Case4_data[rows_to_skip:end,1:3]
-HOS_NWT_Case4_data = Float64.(HOS_NWT_Case4_data)
-HOS_NWT_Case4_time = HOS_NWT_Case4_data[:,1]
-HOS_NWT_Case4_wave = HOS_NWT_Case4_data[:,3]
 
-# AMR-Wind Standalone (only needed if the comparison with wave elevation is needed)
-amrwind_data = readdlm("PATH/TO/AMR_WIND/WAVE_ELEVATION_DATA/filename")
-amrwind_data = Float64.(amrwind_data)
-amrwind_time = amrwind_data[:,1]
-amrwind_wave = amrwind_data[:,2]
+file_amrwind = ""
+file_hosnwt = ""
 
+if (!isempty(file_amrwind))
+    rows_to_skip = 49
+    # Data from probes for JONSWAP spectrum from HOS-NWT simulation (only needed if the comparison with wave elevation is needed)
+    HOS_NWT_Case4_data = readdlm(file_hosnwt)
+    HOS_NWT_Case4_data = HOS_NWT_Case4_data[rows_to_skip:end,1:3]
+    HOS_NWT_Case4_data = Float64.(HOS_NWT_Case4_data)
+    HOS_NWT_Case4_time = HOS_NWT_Case4_data[:,1]
+    HOS_NWT_Case4_wave = HOS_NWT_Case4_data[:,3]
+
+    # AMR-Wind Standalone (only needed if the comparison with wave elevation is needed)
+    amrwind_data = readdlm(file_amrwind)
+    amrwind_data = Float64.(amrwind_data)
+    amrwind_time = amrwind_data[:,1]
+    amrwind_wave = amrwind_data[:,2]
+end
 
 ####################### FORCES ##########################################################################################################
 # Data from OC6 Experiment
-ZXP0_data = readdlm("PATH/TO/ExperimentalForceFile/ZXP0_LC33_full.txt")
+ZXP0_data = readdlm(file_exp)
 ZXP0_data = ZXP0_data[2001:end,:]
 ZXP0_data = Float64.(ZXP0_data)
 ZXP0_data[:,1] = ZXP0_data[:,1].-200 # "." dot is to subtract elementwise for the column
@@ -61,7 +73,7 @@ EXP_Fz = ZXP0_data[:,5]
 EXP_My = ZXP0_data[:,7]
 
 # Data from StarCCM+ simulation
-CFD_data = readdlm("PATH/TO/StarCCM+ForceFile/NREL_LC33_CFD.txt")
+CFD_data = readdlm(file_cfd_ref)
 CFD_data = Float64.(CFD_data[2:end,:])
 CFD_time = CFD_data[:,1]
 CFD_wave = CFD_data[:,2]
@@ -70,7 +82,7 @@ CFD_Fz = CFD_data[:,5]
 CFD_My = CFD_data[:,7]
 
 # Data from OpenFAST Simulation using Experimental Waves as input
-EXPWAVE_data = readdlm("PATH/TO/OpenFastWithEXP/NREL_LC33_FAST_EXPWave.txt")
+EXPWAVE_data = readdlm(file_ofast_exp)
 EXPWAVE_data = EXPWAVE_data[2001:end,:] 
 EXPWAVE_data = Float64.(EXPWAVE_data)
 EXPWAVE_data[:,1] = EXPWAVE_data[:,1].-200;
@@ -81,7 +93,7 @@ FAST_EXPWave_Fz = EXPWAVE_data[:,5]
 FAST_EXPWave_My = EXPWAVE_data[:,7]
 
 # Data from OpenFAST Simulation using StarCCM+ Waves as input
-CFDWAVE_data = readdlm("PATH/TO/OpenFastWithStarCCM/NREL_LC33_FAST_CFDWave.txt")
+CFDWAVE_data = readdlm(file_ofast_cfd)
 CFDWAVE_data = Float64.(CFDWAVE_data[2:end,:])
 FASTCFDWave_time = CFDWAVE_data[:,1]
 FASTCFDWave_wave = CFDWAVE_data[:,2]
@@ -98,7 +110,24 @@ FASTCFDWave_My = CFDWAVE_data[:,7]
 # M_y = L^4 M_y
 rescaling = 50. 
 
-Nalu_data = readdlm("PATH/TO/NALUWINDFORCES/filename")
+file_exawind = file_exawind_pfx * file_exawind_labels[1] * file_exawind_sfx
+Nalu_data = readdlm(file_exawind,skipstart=2)
+for label in file_exawind_labels[2:end]
+    file_exawind_tmp = file_exawind_pfx * label * file_exawind_sfx
+    Nalu_data_tmp = readdlm(file_exawind_tmp,skipstart=1)
+    first_time = Nalu_data_tmp[1,1]
+    last_index = length(Nalu_data[:,1])
+    for ii=1:length(Nalu_data[:,1])
+        last_time = Nalu_data[last_index,1]
+        if (last_time >= first_time)
+            last_index -= 1
+        else
+            break
+        end
+    end
+    #global Nalu_data = Nalu_data[1:last_index,:]
+    global Nalu_data = vcat(Nalu_data[1:last_index,:],Nalu_data_tmp)
+end
 # converting to full (prototype) scale
 NaluWAVE_data = Float64.(Nalu_data[2:end,:])
 # Make unevenly space time series into an evenly spaced one
@@ -125,8 +154,10 @@ _ , Nalu_EvenlySpaced_My = get_evenly_spaced_time_series(NaluWAVE_data[:,1],Nalu
 NaluWave_time = time_evenly_spaced.*sqrt(rescaling)
 
 # In case one needs to discard any transient time data
-t_final = NaluWave_time[1]./sqrt(rescaling) + 0.027*(NaluWave_time[end]./sqrt(rescaling)) + 545.0 # seconds (model scale)
-t_skip = NaluWave_time[1]./sqrt(rescaling) + 0.027*(NaluWave_time[end]./sqrt(rescaling)) # seconds (model scale) # if skipping some times is needed 
+#t_final = NaluWave_time[1]./sqrt(rescaling) + 0.027*(NaluWave_time[end]./sqrt(rescaling)) + 545.0 # seconds (model scale)
+#t_skip = NaluWave_time[1]./sqrt(rescaling) + 0.027*(NaluWave_time[end]./sqrt(rescaling)) # seconds (model scale) # if skipping some times is needed 
+t_skip = 20.
+t_final = t_skip + 545.
 println("t_skip = ",t_skip)
 indices = findall(NaluWave_time->(NaluWave_time>=(t_skip*sqrt(rescaling)) && NaluWave_time<=(t_final*sqrt(rescaling))),NaluWave_time)
 
@@ -149,12 +180,14 @@ stepRange = collect(3000:108000) # We are skipping 5 minutes (300 seconds) of fu
 stepRangeNalu = collect(1:length(NaluWave_time)) # include all of the Nalu time
 
 # Plot Waves Time series (Model Scale)
-Time_series_plot = plot(EXP_time./sqrt(rescaling),EXP_wave./(rescaling),label="Experiment",xlims=(0,t_final),legend=:outertop)
-plot!(HOS_NWT_Case4_time,HOS_NWT_Case4_wave,label="HOS-NWT",linestyle=:dashdotdot)
-plot!(amrwind_time,amrwind_wave,label="AMR-Wind Standalone",linestyle=:dash)
-xlabel!("Time \$[sec]\$ - Model Scale")
-ylabel!("Wave Elevation  \$[m]\$ - Model Scale")
-savefig(Time_series_plot,"wave_elevation_time_series.pdf")
+if (!isempty(file_amrwind))
+    Time_series_plot = plot(EXP_time./sqrt(rescaling),EXP_wave./(rescaling),label="Experiment",xlims=(0,t_final),legend=:outertop)
+    plot!(HOS_NWT_Case4_time,HOS_NWT_Case4_wave,label="HOS-NWT",linestyle=:dashdotdot)
+    plot!(amrwind_time,amrwind_wave,label="AMR-Wind Standalone",linestyle=:dash)
+    xlabel!("Time \$[sec]\$ - Model Scale")
+    ylabel!("Wave Elevation  \$[m]\$ - Model Scale")
+    savefig(Time_series_plot,"wave_elevation_time_series.pdf")
+end
 
 # Mean Surge - Unrelated to PSD, just the mean value of the surge force across times
 mean_NaluFx = mean(NaluWave_Fx[stepRangeNalu])
@@ -208,27 +241,29 @@ PSDInt_wave_FAST_CFDWAVE_low  = rangedTrapz(f,abs.(PSD),lowfrequencies_range)
 PSDInt_wave_FAST_CFDWAVE_wave = rangedTrapz(f,abs.(PSD),wavefrequencies_range)
 
 # wave AMR-Wind # Not part of the Milestone: only to validate AMR-Wind codebase
-AMRWind_WAVE_time_interp = Interpolations.deduplicate_knots!(amrwind_time)
-itp_waves_amrwind =  interpolate((AMRWind_WAVE_time_interp,), amrwind_wave, Gridded(Linear()))
-amrwind_wave_evenly_spaced = itp_waves_amrwind.(time_evenly_spaced)
-AMRWind_time = time_evenly_spaced.*sqrt(rescaling)
-AMRWind_Wave = amrwind_wave_evenly_spaced.*rescaling
+if (!isempty(file_amrwind))
+    AMRWind_WAVE_time_interp = Interpolations.deduplicate_knots!(amrwind_time)
+    itp_waves_amrwind =  interpolate((AMRWind_WAVE_time_interp,), amrwind_wave, Gridded(Linear()))
+    amrwind_wave_evenly_spaced = itp_waves_amrwind.(time_evenly_spaced)
+    AMRWind_time = time_evenly_spaced.*sqrt(rescaling)
+    AMRWind_Wave = amrwind_wave_evenly_spaced.*rescaling
 
-# adding also the curve with just 640 seconds
-indices_amrwind = findall(AMRWind_time->(AMRWind_time>=(t_skip.*sqrt(rescaling)) && AMRWind_time<=(t_final.*sqrt(rescaling))),AMRWind_time)
+    # adding also the curve with just 640 seconds
+    indices_amrwind = findall(AMRWind_time->(AMRWind_time>=(t_skip.*sqrt(rescaling)) && AMRWind_time<=(t_final.*sqrt(rescaling))),AMRWind_time)
 
-#f, P1, PSD, fdouble, P2 = FFTAnalysis(amrwind_time.*sqrt(rescaling),amrwind_wave.*rescaling,true,false,smoothing_type,smoothing_parameter)
-f, P1, PSD, fdouble, P2 = FFTAnalysis(AMRWind_time,AMRWind_Wave,true,false,smoothing_type,smoothing_parameter)
-f, P1, PSD, fdouble, P2 = FFTAnalysis(AMRWind_time[indices_amrwind],AMRWind_Wave[indices_amrwind],true,false,smoothing_type,smoothing_parameter)
-plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="AMR-Wind Standalone",linestyle=:dash)
-vspan!([0.05519,0.1345]; alpha = 0.3,label="Frequency Range")
-vspan!([0.005,0.05]; alpha = 0.3,label="Low Frequency Range")
-xlabel!("Frequency [Hz]")
-ylabel!("PSD of Incident Wave \$[m^2/Hz]\$")
-savefig(wave_plot,"wave_PSD.pdf")
-f, P1, PSD, fdouble, P2 = FFTAnalysis(AMRWind_time,AMRWind_Wave,false,false,~,~)
-PSDInt_wave_amrwind_low  = rangedTrapz(f,abs.(PSD),lowfrequencies_range)
-PSDInt_wave_amrwind_wave = rangedTrapz(f,abs.(PSD),wavefrequencies_range)
+    #f, P1, PSD, fdouble, P2 = FFTAnalysis(amrwind_time.*sqrt(rescaling),amrwind_wave.*rescaling,true,false,smoothing_type,smoothing_parameter)
+    f, P1, PSD, fdouble, P2 = FFTAnalysis(AMRWind_time,AMRWind_Wave,true,false,smoothing_type,smoothing_parameter)
+    f, P1, PSD, fdouble, P2 = FFTAnalysis(AMRWind_time[indices_amrwind],AMRWind_Wave[indices_amrwind],true,false,smoothing_type,smoothing_parameter)
+    plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="AMR-Wind Standalone",linestyle=:dash)
+    vspan!([0.05519,0.1345]; alpha = 0.3,label="Frequency Range")
+    vspan!([0.005,0.05]; alpha = 0.3,label="Low Frequency Range")
+    xlabel!("Frequency [Hz]")
+    ylabel!("PSD of Incident Wave \$[m^2/Hz]\$")
+    savefig(wave_plot,"wave_PSD.pdf")
+    f, P1, PSD, fdouble, P2 = FFTAnalysis(AMRWind_time,AMRWind_Wave,false,false,~,~)
+    PSDInt_wave_amrwind_low  = rangedTrapz(f,abs.(PSD),lowfrequencies_range)
+    PSDInt_wave_amrwind_wave = rangedTrapz(f,abs.(PSD),wavefrequencies_range)
+end
 
 # first one is for plotting purposes
 # Fx EXP
