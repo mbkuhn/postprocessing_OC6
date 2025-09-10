@@ -110,8 +110,8 @@ q0 = NaluWAVE_data[:,5]
 q1 = NaluWAVE_data[:,6]
 q2 = NaluWAVE_data[:,7]
 q3 = NaluWAVE_data[:,8]
-theta_y_Nalu = pi/2.0.+ 2.0.*atan.(sqrt.(1.0.+2.0.*(q0.*q2.-q1.*q3)),sqrt.(1.0.-2.0.*(q0.*q2.-q1.*q3)))
-theta_y_Nalu = theta_y_Nalu.*(180.0./pi)
+theta_y_Nalu_rad = -pi/2.0.+ 2.0.*atan.(sqrt.(1.0.+2.0.*(q0.*q2.-q1.*q3)),sqrt.(1.0.-2.0.*(q0.*q2.-q1.*q3)))
+theta_y_Nalu = theta_y_Nalu_rad.*(180.0./pi)
 # convert to degrees
 # theta y
 _ , Nalu_EvenlySpaced_thy = get_evenly_spaced_time_series(NaluWAVE_data[:,1],theta_y_Nalu)
