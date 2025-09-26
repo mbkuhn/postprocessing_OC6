@@ -46,7 +46,7 @@ file_exp = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/LC5_motion_m
 file_cfd_ref = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/LC5_motion_moored_waves/oc6.phase1a.nrel.lc53.txt"
 file_exawind_pfx = "/Users/mkuhn/testruns_data/OC5_semisubmersible/HOS-NWT/floating_fixed_dt/platform_disp_etc"
 file_exawind_sfx = ".dat"
-file_exawind_labels = [""]
+file_exawind_labels = ["0","1","2","3"]
 
 
 ####################### FORCES ##########################################################################################################
@@ -222,14 +222,14 @@ PSDInt_z_NaluWave_wave = rangedTrapz(f,abs.(PSD),wavefrequencies_range) # these 
 # theta y EXP
 f, P1, PSD, fdouble, P2 = FFTAnalysis(EXP_time[stepRange],EXP_thy[stepRange],true,false,smoothing_type,smoothing_parameter)
 thy_plot = plot(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="Experiment",xlims=(0,0.4)) #,ylims=(1e13,1e18),legend=:topright) # in the paper, the xlim is [0,0.4], in the code is [0,0.14]
-f, P1, PSD, fdouble, P2 = FFTAnalysis(EXP_time[stepRange],EXP_thy[stepRange],true,false,smoothing_type,smoothing_parameter)
+f, P1, PSD, fdouble, P2 = FFTAnalysis(EXP_time[stepRange],EXP_thy[stepRange],false,false,~,~)
 PSDInt_thy_EXP_low  = rangedTrapz(f,abs.(PSD),lowfrequencies_range)
 PSDInt_thy_EXP_wave = rangedTrapz(f,abs.(PSD),wavefrequencies_range)
 
 # theta y CFD
 f, P1, PSD, fdouble, P2 = FFTAnalysis(CFD_time[stepRange],CFD_thy[stepRange],true,false,smoothing_type,smoothing_parameter)
 plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="StarCCM+")
-f, P1, PSD, fdouble, P2 = FFTAnalysis(CFD_time[stepRange],CFD_thy[stepRange],true,false,smoothing_type,smoothing_parameter)
+f, P1, PSD, fdouble, P2 = FFTAnalysis(CFD_time[stepRange],CFD_thy[stepRange],false,false,~,~)
 PSDInt_thy_CFD_low  = rangedTrapz(f,abs.(PSD),lowfrequencies_range)
 PSDInt_thy_CFD_wave = rangedTrapz(f,abs.(PSD),wavefrequencies_range)
 
@@ -241,7 +241,7 @@ vspan!([0.005,0.05]; alpha = 0.3,label="Low Frequency Range")
 xlabel!("Frequency [Hz]")
 ylabel!("Global " * L"\theta_y [^o ^2]")
 savefig(thy_plot,"thy_PSD.pdf")
-f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_thy[stepRangeNalu],true,false,smoothing_type,smoothing_parameter) # HERE
+f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_thy[stepRangeNalu],false,false,~,~)
 PSDInt_thy_NaluWave_low  = rangedTrapz(f,abs.(PSD),lowfrequencies_range)
 PSDInt_thy_NaluWave_wave = rangedTrapz(f,abs.(PSD),wavefrequencies_range) # these are just to get the bar plots
 
