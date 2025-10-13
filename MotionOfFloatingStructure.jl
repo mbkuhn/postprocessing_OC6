@@ -125,10 +125,8 @@ _ , Nalu_EvenlySpaced_thy = get_evenly_spaced_time_series(NaluWAVE_data[:,1],the
 NaluWave_time = time_evenly_spaced.*sqrt(rescaling)
 
 # In case one needs to discard any transient time data
-#t_skip = NaluWave_time[1]./sqrt(rescaling) + 0.027*(NaluWave_time[end]./sqrt(rescaling)) # seconds (model scale) # if skipping some times is needed 
-#t_final = t_skip + 545.0 # seconds (model scale)
-t_skip = 642. - 540. - 65.
-t_final = 642. - 65. #t_skip + 540. #3600. /sqrt(50.)
+t_skip = 37.
+t_final = t_skip + 540.
 println("t_skip = ",t_skip)
 indices = findall(NaluWave_time->(NaluWave_time>=(t_skip*sqrt(rescaling)) && NaluWave_time<=(t_final*sqrt(rescaling))),NaluWave_time)
 
