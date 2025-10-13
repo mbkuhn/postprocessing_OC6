@@ -46,7 +46,7 @@ file_exp = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/LC5_motion_m
 file_cfd_ref = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/LC5_motion_moored_waves/oc6.phase1a.nrel.lc53.txt"
 file_exawind_pfx = "/Users/mkuhn/testruns_data/OC5_semisubmersible/HOS-NWT/floating_fixed_dt/platform_disp_etc"
 file_exawind_sfx = ".dat"
-file_exawind_labels = ["0","1","2","3","4","5"]
+file_exawind_labels = ["0","1","2","3","4","5","6"]
 
 
 ####################### FORCES ##########################################################################################################
@@ -127,8 +127,8 @@ NaluWave_time = time_evenly_spaced.*sqrt(rescaling)
 # In case one needs to discard any transient time data
 #t_skip = NaluWave_time[1]./sqrt(rescaling) + 0.027*(NaluWave_time[end]./sqrt(rescaling)) # seconds (model scale) # if skipping some times is needed 
 #t_final = t_skip + 545.0 # seconds (model scale)
-t_skip = 39.1
-t_final = t_skip + 545.
+t_skip = 642. - 540. - 65.
+t_final = 642. - 65. #t_skip + 540. #3600. /sqrt(50.)
 println("t_skip = ",t_skip)
 indices = findall(NaluWave_time->(NaluWave_time>=(t_skip*sqrt(rescaling)) && NaluWave_time<=(t_final*sqrt(rescaling))),NaluWave_time)
 
@@ -154,7 +154,7 @@ println("Nalu Mean Surge = ", mean_Nalu_x)
 println("Exp Mean Surge = ", mean_EXP_x)
 println("CFD Mean Surge = ", mean_CFD_x)
 println("Ratio = ", mean_Nalu_x/mean_EXP_x)
-mean_surge_plot = bar((1,mean_EXP_x),label="Experiment",legend=:outertopright)
+mean_surge_plot = bar((1,mean_EXP_x),label="Experiment",legend=:outertopright,xformatter=_->"")
 bar!((2,mean_CFD_x),label="StarCCM+")
 bar!((3,mean_Nalu_x),label="ExaWind")
 hline!(ones(length(mean_EXP_x))*(abs.(mean_EXP_x)*plus_range_wave_frequency),color=:red,linestyle=:dash,label="+"*wave_range_str*"% from Experiment")
@@ -246,7 +246,7 @@ PSDInt_thy_NaluWave_low  = rangedTrapz(f,abs.(PSD),lowfrequencies_range)
 PSDInt_thy_NaluWave_wave = rangedTrapz(f,abs.(PSD),wavefrequencies_range) # these are just to get the bar plots
 
 ####### PSD INTEGRAL PLOTS (Bar plots) ##################################################
-bar_x = bar((1,abs.(PSDInt_x_EXP_low)),label="Experiment",legend=:outertopright)
+bar_x = bar((1,abs.(PSDInt_x_EXP_low)),label="Experiment",legend=:outertopright,xformatter=_->"")
 bar!((2,abs.(PSDInt_x_CFD_low)),label="StarCCM+")
 bar!((3,abs.(PSDInt_x_NaluWave_low)),label="ExaWind")
 hline!(ones(length(PSDInt_x_EXP_low))*(abs.(PSDInt_x_EXP_low)*plus_range_low_frequency),color=:red,linestyle=:dash,label="+"*low_range_str*"% from Experiment")
@@ -259,7 +259,7 @@ println(PSDInt_x_EXP_low)
 println(PSDInt_x_CFD_low)
 println(PSDInt_x_NaluWave_low)
 
-bar_x_wave = bar((1,abs.(PSDInt_x_EXP_wave)),label="Experiment",legend=:outertopright)
+bar_x_wave = bar((1,abs.(PSDInt_x_EXP_wave)),label="Experiment",legend=:outertopright,xformatter=_->"")
 bar!((2,abs.(PSDInt_x_CFD_wave)),label="StarCCM+")
 bar!((3,abs.(PSDInt_x_NaluWave_wave)),label="ExaWind")
 hline!(ones(length(PSDInt_x_EXP_wave))*(abs.(PSDInt_x_EXP_wave)*plus_range_wave_frequency),color=:red,linestyle=:dash,label="+"*wave_range_str*"% from Experiment")
@@ -272,7 +272,7 @@ println(PSDInt_x_EXP_wave)
 println(PSDInt_x_CFD_wave)
 println(PSDInt_x_NaluWave_wave)
 
-bar_z = bar((1,abs.(PSDInt_z_EXP_low)),label="Experiment",legend=:outertopright)
+bar_z = bar((1,abs.(PSDInt_z_EXP_low)),label="Experiment",legend=:outertopright,xformatter=_->"")
 bar!((2,abs.(PSDInt_z_CFD_low)),label="StarCCM+")
 bar!((3,abs.(PSDInt_z_NaluWave_low)),label="ExaWind")
 hline!(ones(length(PSDInt_z_EXP_low))*(abs.(PSDInt_z_EXP_low)*plus_range_low_frequency),color=:red,linestyle=:dash,label="+"*low_range_str*"% from Experiment")
@@ -285,7 +285,7 @@ println(PSDInt_z_EXP_low)
 println(PSDInt_z_CFD_low)
 println(PSDInt_z_NaluWave_low)
 
-bar_z_wave = bar((1,abs.(PSDInt_z_EXP_wave)),label="Experiment",legend=:outertopright)
+bar_z_wave = bar((1,abs.(PSDInt_z_EXP_wave)),label="Experiment",legend=:outertopright,xformatter=_->"")
 bar!((2,abs.(PSDInt_z_CFD_wave)),label="StarCCM+")
 bar!((3,abs.(PSDInt_z_NaluWave_wave)),label="ExaWind")
 hline!(ones(length(PSDInt_z_EXP_wave))*(abs.(PSDInt_z_EXP_wave)*plus_range_wave_frequency),color=:red,linestyle=:dash,label="+"*wave_range_str*"% from Experiment")
@@ -298,7 +298,7 @@ println(PSDInt_z_EXP_wave)
 println(PSDInt_z_CFD_wave)
 println(PSDInt_z_NaluWave_wave)
 
-bar_thy = bar((1,abs.(PSDInt_thy_EXP_low)),label="Experiment",legend=:outertopright)
+bar_thy = bar((1,abs.(PSDInt_thy_EXP_low)),label="Experiment",legend=:outertopright,xformatter=_->"")
 bar!((2,abs.(PSDInt_thy_CFD_low)),label="StarCCM+")
 bar!((3,abs.(PSDInt_thy_NaluWave_low)),label="ExaWind")
 hline!(ones(length(PSDInt_thy_EXP_low))*(abs.(PSDInt_thy_EXP_low)*plus_range_low_frequency),color=:red,linestyle=:dash,label="+"*low_range_str*"% from Experiment")
@@ -311,7 +311,7 @@ println(PSDInt_thy_EXP_low)
 println(PSDInt_thy_CFD_low)
 println(PSDInt_thy_NaluWave_low)
 
-bar_thy_wave = bar((1,abs.(PSDInt_thy_EXP_wave)),label="Experiment",legend=:outertopright)
+bar_thy_wave = bar((1,abs.(PSDInt_thy_EXP_wave)),label="Experiment",legend=:outertopright,xformatter=_->"")
 bar!((2,abs.(PSDInt_thy_CFD_wave)),label="StarCCM+")
 bar!((3,abs.(PSDInt_thy_NaluWave_wave)),label="ExaWind")
 hline!(ones(length(PSDInt_thy_EXP_wave))*(abs.(PSDInt_thy_EXP_wave)*plus_range_wave_frequency),color=:red,linestyle=:dash,label="+"*wave_range_str*"% from Experiment")
