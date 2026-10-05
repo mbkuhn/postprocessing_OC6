@@ -44,9 +44,12 @@ end
 
 file_exp = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/LC5_motion_moored_waves/oc6.phase1a.exp0.lc53.txt"
 file_cfd_ref = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/LC5_motion_moored_waves/oc6.phase1a.nrel.lc53.txt"
+matfile_cfd_ref = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/OC6_LC33_LC53_CFD_scripts_data/LC53_FloatingStructure/Runs.mat"
 file_exawind_pfx = "/Users/mkuhn/testruns_data/OC5_semisubmersible/HOS-NWT/floating_fixed_dt/platform_disp_etc"
 file_exawind_sfx = ".dat"
 file_exawind_labels = ["0","1","2","3","4","5","6"]
+
+matf_vars = matread(matfile_cfd_ref)
 
 
 ####################### FORCES ##########################################################################################################
@@ -59,12 +62,10 @@ EXP_z = ZXP0_data[:,5]
 EXP_thy = ZXP0_data[:,7]
 
 # Data from StarCCM+ simulation
-CFD_data = Float64.(readdlm(file_cfd_ref))
-CFD_time = CFD_data[:,1]
-CFD_wave = CFD_data[:,2]
-CFD_x = CFD_data[:,3] 
-CFD_z = CFD_data[:,5] 
-CFD_thy = CFD_data[:,7]
+CFD_time = matf_vars["Runs"]["NREL"]["time"]
+CFD_x = matf_vars["Runs"]["NREL"]["surge"]
+CFD_z = matf_vars["Runs"]["NREL"]["heave"]
+CFD_thy = matf_vars["Runs"]["NREL"]["pitch"]
 
 # NaluWind DATA
 

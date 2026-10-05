@@ -42,23 +42,31 @@ file_exawind_labels = ["0","1","2","3","4","5"]
 #file_exawind_labels = ["_2025july"]
 
 
-file_amrwind = ""
+file_amrwind = "/Users/mkuhn/testruns_data/OC5_semisubmersible/HOS-NWT/amr-wind-standalone/same_res/output_same_res.txt"
+file_emptynaluwind = "/Users/mkuhn/testruns_data/OC5_semisubmersible/HOS-NWT/empty_nalu_mesh/output_nw_empty.txt"
+#file_amrwind = ""
 file_hosnwt = ""
 
 if (!isempty(file_amrwind))
-    rows_to_skip = 49
-    # Data from probes for JONSWAP spectrum from HOS-NWT simulation (only needed if the comparison with wave elevation is needed)
-    HOS_NWT_Case4_data = readdlm(file_hosnwt)
-    HOS_NWT_Case4_data = HOS_NWT_Case4_data[rows_to_skip:end,1:3]
-    HOS_NWT_Case4_data = Float64.(HOS_NWT_Case4_data)
-    HOS_NWT_Case4_time = HOS_NWT_Case4_data[:,1]
-    HOS_NWT_Case4_wave = HOS_NWT_Case4_data[:,3]
+    #rows_to_skip = 49
+    ## Data from probes for JONSWAP spectrum from HOS-NWT simulation (only needed if the comparison with wave elevation is needed)
+    #HOS_NWT_Case4_data = readdlm(file_hosnwt)
+    #HOS_NWT_Case4_data = HOS_NWT_Case4_data[rows_to_skip:end,1:3]
+    #HOS_NWT_Case4_data = Float64.(HOS_NWT_Case4_data)
+    #HOS_NWT_Case4_time = HOS_NWT_Case4_data[:,1]
+    #HOS_NWT_Case4_wave = HOS_NWT_Case4_data[:,3]
 
     # AMR-Wind Standalone (only needed if the comparison with wave elevation is needed)
     amrwind_data = readdlm(file_amrwind)
     amrwind_data = Float64.(amrwind_data)
     amrwind_time = amrwind_data[:,1]
     amrwind_wave = amrwind_data[:,2]
+
+    # ExaWind with empty Nalu-Wind mesh
+    HOS_NWT_Case4_data = readdlm(file_emptynaluwind)
+    HOS_NWT_Case4_data = Float64.(HOS_NWT_Case4_data)
+    HOS_NWT_Case4_time = HOS_NWT_Case4_data[:,1]
+    HOS_NWT_Case4_wave = HOS_NWT_Case4_data[:,2]
 end
 
 ####################### FORCES ##########################################################################################################
@@ -245,8 +253,9 @@ PSDInt_wave_FAST_CFDWAVE_wave = rangedTrapz(f,abs.(PSD),wavefrequencies_range)
 if (!isempty(file_amrwind))
     AMRWind_WAVE_time_interp = Interpolations.deduplicate_knots!(amrwind_time)
     itp_waves_amrwind =  interpolate((AMRWind_WAVE_time_interp,), amrwind_wave, Gridded(Linear()))
-    amrwind_wave_evenly_spaced = itp_waves_amrwind.(time_evenly_spaced)
-    AMRWind_time = time_evenly_spaced.*sqrt(rescaling)
+    amr_time_evenly_spaced = collect(amrwind_data[1,1]:t_spacing:amrwind_data[end,1])
+    amrwind_wave_evenly_spaced = itp_waves_amrwind.(amr_time_evenly_spaced)
+    AMRWind_time = amr_time_evenly_spaced.*sqrt(rescaling)
     AMRWind_Wave = amrwind_wave_evenly_spaced.*rescaling
 
     # adding also the curve with just 640 seconds
