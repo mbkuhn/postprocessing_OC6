@@ -42,9 +42,9 @@ else
     smoothing_parameter = 30
 end
 
-file_exp = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/LC5_motion_moored_waves/oc6.phase1a.exp0.lc53.txt"
-file_cfd_ref = "/Users/mkuhn/testruns_data/OC6_PhaseIa_dataset_and_more/LC5_motion_moored_waves/oc6.phase1a.nrel.lc53.txt"
-file_exawind_pfx = "/Users/mkuhn/testruns_data/OC5_semisubmersible/HOS-NWT/floating_fixed_dt/platform_disp_etc"
+file_exp = "/Users/mkuhn/OneDrive - NLR/testruns_data/OC6_PhaseIa_dataset_and_more/LC5_motion_moored_waves/oc6.phase1a.exp0.lc53.txt"
+file_cfd_ref = "/Users/mkuhn/OneDrive - NLR/testruns_data/OC6_PhaseIa_dataset_and_more/LC5_motion_moored_waves/oc6.phase1a.nrel.lc53.txt"
+file_exawind_pfx = "/Users/mkuhn/OneDrive - NLR/testruns_data/OC5_semisubmersible/HOS-NWT/floating_fixed_dt/platform_disp_etc"
 file_exawind_sfx = ".dat"
 file_exawind_labels = ["0","1","2","3","4","5","6"]
 
