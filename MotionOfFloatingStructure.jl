@@ -140,6 +140,24 @@ NaluWave_x = (Nalu_EvenlySpaced_x[indices] .- x_CG).*(rescaling)
 NaluWave_z = (Nalu_EvenlySpaced_z[indices] .- z_CG).*(rescaling)
 NaluWave_thy = (Nalu_EvenlySpaced_thy[indices])
 
+# Displacement time series at full scale
+x_time_plot = plot(EXP_time,EXP_x,label="Experiment",ylabel="Surge x [m]")
+plot!(x_time_plot,CFD_time,CFD_x,label="StarCCM+")
+plot!(x_time_plot,NaluWave_time,NaluWave_x,label="ExaWind",linestyle=:dash)
+
+z_time_plot = plot(EXP_time,EXP_z,label="Experiment",ylabel="Heave z [m]")
+plot!(z_time_plot,CFD_time,CFD_z,label="StarCCM+")
+plot!(z_time_plot,NaluWave_time,NaluWave_z,label="ExaWind",linestyle=:dash)
+
+thy_time_plot = plot(EXP_time,EXP_thy,label="Experiment",ylabel="Pitch [deg]")
+plot!(thy_time_plot,CFD_time,CFD_thy,label="StarCCM+")
+plot!(thy_time_plot,NaluWave_time,NaluWave_thy,label="ExaWind",linestyle=:dash)
+
+displacement_time_plot = plot(x_time_plot,z_time_plot,thy_time_plot,
+    layout=(3,1),link=:x,size=(1000,900),xlabel="Time [s] - Full Scale",
+    legend=:outertopright)
+savefig(displacement_time_plot,"displacement_time_series.pdf")
+
 stepRange = collect(3000:108000) # We are skipping 5 minutes (300 seconds) of full scale time (roughly 42 seconds of model scale time), out of a 10800 seconds which are 180 minutes (3 hours) of full scale time (26 minutes of model scale)
 
 stepRangeNalu = collect(1:length(NaluWave_time)) # include all of the Nalu time
