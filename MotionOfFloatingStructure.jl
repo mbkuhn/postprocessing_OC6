@@ -42,9 +42,9 @@ else
     smoothing_parameter = 30
 end
 
-file_exp = "/Users/mkuhn/OneDrive - NLR/testruns_data/OC6_PhaseIa_dataset_and_more/LC5_motion_moored_waves/oc6.phase1a.exp0.lc53.txt"
-file_cfd_ref = "/Users/mkuhn/OneDrive - NLR/testruns_data/OC6_PhaseIa_dataset_and_more/LC5_motion_moored_waves/oc6.phase1a.nrel.lc53.txt"
-file_exawind_pfx = "/Users/mkuhn/OneDrive - NLR/testruns_data/OC5_semisubmersible/HOS-NWT/floating_fixed_dt/platform_disp_etc"
+file_exp = "data/oc6.phase1a.exp0.lc53.txt"
+file_cfd_ref = "data/oc6.phase1a.nrel.lc53.txt"
+file_exawind_pfx = "data/platform_disp_etc"
 file_exawind_sfx = ".dat"
 file_exawind_labels = ["0","1","2","3","4","5","6"]
 
@@ -156,7 +156,7 @@ plot!(thy_time_plot,NaluWave_time,NaluWave_thy,label="ExaWind",linestyle=:dash)
 displacement_time_plot = plot(x_time_plot,z_time_plot,thy_time_plot,
     layout=(3,1),link=:x,size=(1000,900),xlabel="Time [s] - Full Scale",
     legend=:outertopright)
-savefig(displacement_time_plot,"displacement_time_series.pdf")
+savefig(displacement_time_plot,"outputs/displacement_time_series.pdf")
 
 stepRange = collect(3000:108000) # We are skipping 5 minutes (300 seconds) of full scale time (roughly 42 seconds of model scale time), out of a 10800 seconds which are 180 minutes (3 hours) of full scale time (26 minutes of model scale)
 
@@ -176,7 +176,7 @@ bar!((3,mean_Nalu_x),label="ExaWind")
 hline!(ones(length(mean_EXP_x))*(abs.(mean_EXP_x)*plus_range_wave_frequency),color=:red,linestyle=:dash,label="+"*wave_range_str*"% from Experiment")
 hline!(ones(length(mean_EXP_x))*(abs.(mean_EXP_x)*minus_range_wave_frequency),color=:black,linestyle=:dash,label="-"*wave_range_str*"% from Experiment")
 ylabel!("Mean Drift in Surge \$[m]\$")
-savefig(mean_surge_plot,"Mean_Surge_Drift.pdf")
+savefig(mean_surge_plot,"outputs/Mean_Surge_Drift.pdf")
 
 ### **** PSD COMPUTATIONS AND PLOTS ******
 
@@ -202,7 +202,7 @@ vspan!([0.05519,0.1345]; alpha = 0.3,label="Frequency Range")
 vspan!([0.005,0.05]; alpha = 0.3,label="Low Frequency Range")
 xlabel!("Frequency [Hz]")
 ylabel!("Global \$x [m^2/Hz]\$")
-savefig(x_plot,"x_PSD.pdf")
+savefig(x_plot,"outputs/x_PSD.pdf")
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_x[stepRangeNalu],false,false,~,~)
 PSDInt_x_NaluWave_low  = rangedTrapz(f,abs.(PSD),lowfrequencies_range)
 PSDInt_x_NaluWave_wave = rangedTrapz(f,abs.(PSD),wavefrequencies_range) # these are just to get the bar plots
@@ -229,7 +229,7 @@ vspan!([0.05519,0.1345]; alpha = 0.3,label="Frequency Range")
 vspan!([0.005,0.05]; alpha = 0.3,label="Low Frequency Range")
 xlabel!("Frequency [Hz]")
 ylabel!("Global \$z [m^2/Hz]\$")
-savefig(z_plot,"z_PSD.pdf")
+savefig(z_plot,"outputs/z_PSD.pdf")
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_z[stepRangeNalu],false,false,~,~)
 PSDInt_z_NaluWave_low  = rangedTrapz(f,abs.(PSD),lowfrequencies_range)
 PSDInt_z_NaluWave_wave = rangedTrapz(f,abs.(PSD),wavefrequencies_range) # these are just to get the bar plots
@@ -256,7 +256,7 @@ vspan!([0.05519,0.1345]; alpha = 0.3,label="Frequency Range")
 vspan!([0.005,0.05]; alpha = 0.3,label="Low Frequency Range")
 xlabel!("Frequency [Hz]")
 ylabel!("Global " * L"\theta_y [^o ^2]")
-savefig(thy_plot,"thy_PSD.pdf")
+savefig(thy_plot,"outputs/thy_PSD.pdf")
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_thy[stepRangeNalu],false,false,~,~)
 PSDInt_thy_NaluWave_low  = rangedTrapz(f,abs.(PSD),lowfrequencies_range)
 PSDInt_thy_NaluWave_wave = rangedTrapz(f,abs.(PSD),wavefrequencies_range) # these are just to get the bar plots
@@ -268,7 +268,7 @@ bar!((3,abs.(PSDInt_x_NaluWave_low)),label="ExaWind")
 hline!(ones(length(PSDInt_x_EXP_low))*(abs.(PSDInt_x_EXP_low)*plus_range_low_frequency),color=:red,linestyle=:dash,label="+"*low_range_str*"% from Experiment")
 hline!(ones(length(PSDInt_x_EXP_low))*(abs.(PSDInt_x_EXP_low)*minus_range_low_frequency),color=:black,linestyle=:dash,label="-"*low_range_str*"% from Experiment")
 ylabel!("Low-Frequency PSD Integral of \$x [m^2]\$")
-savefig(bar_x,"bar_x_PSD_low_frequency.pdf")
+savefig(bar_x,"outputs/bar_x_PSD_low_frequency.pdf")
 
 println("x_low")
 println(PSDInt_x_EXP_low)
@@ -281,7 +281,7 @@ bar!((3,abs.(PSDInt_x_NaluWave_wave)),label="ExaWind")
 hline!(ones(length(PSDInt_x_EXP_wave))*(abs.(PSDInt_x_EXP_wave)*plus_range_wave_frequency),color=:red,linestyle=:dash,label="+"*wave_range_str*"% from Experiment")
 hline!(ones(length(PSDInt_x_EXP_wave))*(abs.(PSDInt_x_EXP_wave)*minus_range_wave_frequency),color=:black,linestyle=:dash,label="-"*wave_range_str*"% from Experiment")
 ylabel!("Wave-frequency PSD Integral of \$x [m^2]\$")
-savefig(bar_x_wave,"bar_x_PSD_wave_frequency.pdf")
+savefig(bar_x_wave,"outputs/bar_x_PSD_wave_frequency.pdf")
 
 println("x_wave")
 println(PSDInt_x_EXP_wave)
@@ -294,7 +294,7 @@ bar!((3,abs.(PSDInt_z_NaluWave_low)),label="ExaWind")
 hline!(ones(length(PSDInt_z_EXP_low))*(abs.(PSDInt_z_EXP_low)*plus_range_low_frequency),color=:red,linestyle=:dash,label="+"*low_range_str*"% from Experiment")
 hline!(ones(length(PSDInt_z_EXP_low))*(abs.(PSDInt_z_EXP_low)*minus_range_low_frequency),color=:black,linestyle=:dash,label="-"*low_range_str*"% from Experiment")
 ylabel!("Low-Frequency PSD Integral of \$z [m^2]\$")
-savefig(bar_z,"bar_z_PSD_low_frequency.pdf")
+savefig(bar_z,"outputs/bar_z_PSD_low_frequency.pdf")
 
 println("z_low")
 println(PSDInt_z_EXP_low)
@@ -307,7 +307,7 @@ bar!((3,abs.(PSDInt_z_NaluWave_wave)),label="ExaWind")
 hline!(ones(length(PSDInt_z_EXP_wave))*(abs.(PSDInt_z_EXP_wave)*plus_range_wave_frequency),color=:red,linestyle=:dash,label="+"*wave_range_str*"% from Experiment")
 hline!(ones(length(PSDInt_z_EXP_wave))*(abs.(PSDInt_z_EXP_wave)*minus_range_wave_frequency),color=:black,linestyle=:dash,label="-"*wave_range_str*"% from Experiment")
 ylabel!("Wave-frequency PSD Integral of \$z [m^2]\$")
-savefig(bar_z_wave,"bar_z_PSD_wave_frequency.pdf")
+savefig(bar_z_wave,"outputs/bar_z_PSD_wave_frequency.pdf")
 
 println("z_wave")
 println(PSDInt_z_EXP_wave)
@@ -320,7 +320,7 @@ bar!((3,abs.(PSDInt_thy_NaluWave_low)),label="ExaWind")
 hline!(ones(length(PSDInt_thy_EXP_low))*(abs.(PSDInt_thy_EXP_low)*plus_range_low_frequency),color=:red,linestyle=:dash,label="+"*low_range_str*"% from Experiment")
 hline!(ones(length(PSDInt_thy_EXP_low))*(abs.(PSDInt_thy_EXP_low)*minus_range_low_frequency),color=:black,linestyle=:dash,label="-"*low_range_str*"% from Experiment")
 ylabel!("Low-frequency PSD Integral of " * L"\theta_y [^o^2]")
-savefig(bar_thy,"bar_thy_PSD_low_frequency.pdf")
+savefig(bar_thy,"outputs/bar_thy_PSD_low_frequency.pdf")
 
 println("thy_low")
 println(PSDInt_thy_EXP_low)
@@ -333,7 +333,7 @@ bar!((3,abs.(PSDInt_thy_NaluWave_wave)),label="ExaWind")
 hline!(ones(length(PSDInt_thy_EXP_wave))*(abs.(PSDInt_thy_EXP_wave)*plus_range_wave_frequency),color=:red,linestyle=:dash,label="+"*wave_range_str*"% from Experiment")
 hline!(ones(length(PSDInt_thy_EXP_wave))*(abs.(PSDInt_thy_EXP_wave)*minus_range_wave_frequency),color=:black,linestyle=:dash,label="-"*wave_range_str*"% from Experiment")
 ylabel!("Wave-frequency PSD Integral of " * L"\theta_y [^o^2]")
-savefig(bar_thy_wave,"bar_thy_PSD_wave_frequency.pdf")
+savefig(bar_thy_wave,"outputs/bar_thy_PSD_wave_frequency.pdf")
 
 println("thy_wave")
 println(PSDInt_thy_EXP_wave)
